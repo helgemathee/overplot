@@ -37,3 +37,4 @@ class MainWindow(QtGui.QMainWindow):
     self.addDockWidget(QtCore.Qt.RightDockWidgetArea, logWidget)
 
     settingsWidget.widget().settingChangedMessage.connect(logWidget.widget().onLogEntryReceived)
+    jogWidget.widget().jogRequestedMessage.connect(logWidget.widget().onLogEntryReceived)

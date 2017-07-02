@@ -62,6 +62,9 @@ class SettingsWidget(QtGui.QWidget):
     if not text:
       return
     key = self.sender().objectName()
+    prev = self.getValue(key, -100000)
+    if float(prev) == float(text):
+      return
     self.setValue(key, float(text))
     self.settingChanged.emit(key, float(text))
     self.settingChangedMessage.emit("Setting: {0} = {1}".format(key, text))

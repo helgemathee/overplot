@@ -6,6 +6,9 @@ from PySide import QtCore, QtGui
 
 class JogControlsWidget(QtGui.QWidget):
 
+  jogRequestedMessage = QtCore.Signal(str)
+  moveRequested = QtCore.Signal(str, float)
+
   def __init__(self, parent):
 
     super(JogControlsWidget, self).__init__(parent)
@@ -68,6 +71,19 @@ class JogControlsWidget(QtGui.QWidget):
     layout.addWidget(bDown10mm, 5, 3)
     layout.addWidget(bDown10cm, 6, 3)
 
-  @QtCore.Slot(str)
-  def onButtonPressed(self, command):
-    self.__log.appendPlainText(entry)
+    bUp10cm.clicked.connect(lambda: self._onButtonPressed('Y', -100))
+    bUp10mm.clicked.connect(lambda: self._onButtonPressed('Y', -10))
+    bUp1mm.clicked.connect(lambda: self._onButtonPressed('Y', -1))
+    bLeft10cm.clicked.connect(lambda: self._onButtonPressed('X', -100))
+    bLeft10mm.clicked.connect(lambda: self._onButtonPressed('X', -10))
+    bLeft1mm.clicked.connect(lambda: self._onButtonPressed('X', -1))
+    bRight1mm.clicked.connect(lambda: self._onButtonPressed('X', 1))
+    bRight10mm.clicked.connect(lambda: self._onButtonPressed('X', 10))
+    bRight10cm.clicked.connect(lambda: self._onButtonPressed('X', 100))
+    bDown1mm.clicked.connect(lambda: self._onButtonPressed('Y', 1))
+    bDown10mm.clicked.connect(lambda: self._onButtonPressed('Y', 10))
+    bDown10cm.clicked.connect(lambda: self._onButtonPressed('Y', 100))
+
+  def _onButtonPressed(self, axis, mm):
+    self.jogRequestedMessage.emit("Requested move on axis {0} for {1}".format(axis, mm))
+    self.moveRequested.emit(axis, mm)
