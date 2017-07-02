@@ -1,3 +1,3 @@
 #
-# Copyright (c) 2017-20187, Helge Mathee. All rights reserved.
+# Copyright (c) 2017-2018, Helge Mathee. All rights reserved.
 #
