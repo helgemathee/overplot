@@ -16,7 +16,7 @@ class PreviewWidget(QtGui.QWidget):
     p = QtGui.QPainter()
     p.begin(self)
 
-    p.setBrush(QtGui.QColor(255, 0, 0))
+    p.setBrush(QtGui.QColor(60, 60, 60))
     p.drawRect(r)
 
     p.end()
