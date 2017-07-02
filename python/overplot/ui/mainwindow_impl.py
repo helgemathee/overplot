@@ -6,6 +6,7 @@ from PySide import QtCore, QtGui
 
 from overplot import OVERPLOT_VERSION
 from settingswidget_impl import SettingsWidget
+from jogcontrolswidget_impl import JogControlsWidget
 from logwidget_impl import LogWidget
 
 class MainWindow(QtGui.QMainWindow):
@@ -24,6 +25,11 @@ class MainWindow(QtGui.QMainWindow):
     settingsWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
     settingsWidget.setWidget(SettingsWidget(settingsWidget, settings))
     self.addDockWidget(QtCore.Qt.LeftDockWidgetArea, settingsWidget)
+
+    jogWidget = QtGui.QDockWidget('Jog Controls', self)
+    jogWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
+    jogWidget.setWidget(JogControlsWidget(jogWidget))
+    self.addDockWidget(QtCore.Qt.RightDockWidgetArea, jogWidget)
 
     logWidget = QtGui.QDockWidget('Log', self)
     logWidget.setFeatures(QtGui.QDockWidget.NoDockWidgetFeatures)
