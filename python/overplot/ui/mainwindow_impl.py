@@ -5,6 +5,7 @@
 from PySide import QtCore, QtGui
 
 from overplot import OVERPLOT_VERSION
+from overplot.models.plotter_impl import plotter
 from jogcontrolswidget_impl import JogControlsWidget
 from logwidget_impl import LogWidget
 from previewwidget_impl import PreviewWidget
@@ -13,16 +14,18 @@ from settingswidget_impl import SettingsWidget
 class MainWindow(QtGui.QMainWindow):
 
   __settings = None
+  __plotter = None
 
   def __init__(self):
     super(MainWindow, self).__init__()
 
     self.setWindowTitle("Overplot {0}".format(OVERPLOT_VERSION))
 
-    previewWidget = PreviewWidget(self)
-    self.setCentralWidget(previewWidget)
-
     self.__settings = QtCore.QSettings(self)
+    self.__plotter = plotter(self, self.__settings)
+
+    previewWidget = PreviewWidget(self, self.__plotter)
+    self.setCentralWidget(previewWidget)
 
     settingsWidget = QtGui.QDockWidget('Settings', self)
     settingsWidget.setObjectName('settings')
@@ -42,6 +45,7 @@ class MainWindow(QtGui.QMainWindow):
     logWidget.setWidget(LogWidget(logWidget))
     self.addDockWidget(QtCore.Qt.RightDockWidgetArea, logWidget)
 
+    settingsWidget.widget().settingChanged.connect(self.__plotter.onSettingChanged)
     settingsWidget.widget().settingChangedMessage.connect(logWidget.widget().onLogEntryReceived)
     jogWidget.widget().jogRequestedMessage.connect(logWidget.widget().onLogEntryReceived)
 

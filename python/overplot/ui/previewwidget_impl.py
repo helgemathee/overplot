@@ -6,8 +6,12 @@ from PySide import QtCore, QtGui
 
 class PreviewWidget(QtGui.QWidget):
 
-  def __init__(self, parent):
+  __plotter = None
+
+  def __init__(self, parent, plotter):
     super(PreviewWidget, self).__init__(parent)
+
+    self.__plotter = plotter
 
 
   def paintEvent(self, event):

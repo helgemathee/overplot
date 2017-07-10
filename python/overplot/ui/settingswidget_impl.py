@@ -45,6 +45,7 @@ class SettingsWidget(QtGui.QWidget):
     addField(self, 'left2right', 'Stepper to Stepper (mm)')
     addField(self, 'left2gondola', 'Left Stepper to Gondola (mm)')
     addField(self, 'right2gondola', 'Right Stepper to Gondola (mm)')
+    addField(self, 'beltlength', 'Length of each belt (mm)')
     addField(self, 'stepperDiameter', 'Stepper Diameter (mm)')
 
   def onToggleLocked(self):
