@@ -46,9 +46,15 @@ class PreviewWidget(QtGui.QWidget):
     p.drawLine(home.x(), home.y() - 10, home.x(), home.y() + 10)
 
     p.setPen(QtGui.QPen(QtGui.QColor(255, 255, 0), 1.0))
+
+    # triangle
     p.drawLine(self.__plotter.point(0, 0, w=w), self.__plotter.point(self.__plotter.stepperDistance, 0, w=w))
     p.drawLine(self.__plotter.point(0, 0, w=w), self.__plotter.point(w=w))
     p.drawLine(self.__plotter.point(self.__plotter.stepperDistance, 0, w=w), self.__plotter.point(w=w))
 
+    # remaining belts
+    remainders = self.__plotter.remainingBelts()
+    p.drawLine(self.__plotter.point(0, 0, w=w), self.__plotter.point(0, remainders[0], w=w))
+    p.drawLine(self.__plotter.point(self.__plotter.stepperDistance, 0, w=w), self.__plotter.point(self.__plotter.stepperDistance, remainders[1], w=w))
 
     p.end()

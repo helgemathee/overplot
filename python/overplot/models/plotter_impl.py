@@ -51,6 +51,10 @@ class plotter(QtCore.QObject):
       return self.__simBelts
     return self.__belts
 
+  def remainingBelts(self, simulated=True):
+    belts = self.belts(simulated=simulated)
+    return (self.__beltLength - belts[0], self.__beltLength - belts[1])
+
   def servoAngle(self, simulated=True):
     if simulated:
       return self.__simServoAngle
@@ -96,7 +100,11 @@ class plotter(QtCore.QObject):
   def _posFromBelts(self, belts):
     (c, a) = belts
     b = float(self.__stepperDistance)
-    angle = math.acos((b * b + c * c - a * a) / (2.0 * b * c))
+    angle = 0
+    try:
+      angle = math.acos((b * b + c * c - a * a) / (2.0 * b * c))
+    except ValueError:
+      pass
     x = math.cos(angle) * c
     y = math.sin(angle) * c
     return (x, y)
@@ -123,21 +131,45 @@ class plotter(QtCore.QObject):
       x = x + self.__homePos[0]
       y = y + self.__homePos[0]
 
-    print (x, y)
+    # todo: introduce a safezone
+
+    if y < 0:
+      return
+
+    if x < 0 or x > self.__stepperDistance:
+      return
 
     (l, r) = self._beltsFromPos((x, y))
+
+    if l > self.__beltLength:
+      return
+    if r > self.__beltLength:
+      return
+
     self._setBeltLengths((l, r))
 
   def update(self):
+
+    prevBeltLength = self.__beltLength
+    prevStepperDistance = self.__stepperDistance
+
     self.__beltLength = float(self.__settings.value('settings.beltlength', 1000))
     self.__stepperDistance = float(self.__settings.value('settings.left2right', 2000))
     self.__stepperDiameter = float(self.__settings.value('settings.stepperDiameter', 12))
+
+    if prevBeltLength != self.__beltLength or prevStepperDistance != self.__stepperDistance:
+      self._computeHomePose()
 
     self.__canvasOffset = 250
     self.__canvasWidth = int(self.__stepperDistance) + 2 * self.__canvasOffset
     self.__canvasHeight = int(self.__beltLength * 0.75) + self.__canvasOffset
 
     self.changed.emit()
+
+  def _computeHomePose(self):
+    (homeX, homeY) = self._posFromBelts((self.__beltLength, self.__beltLength))
+    homeY = homeY * 0.5
+    self.__homePos = (homeX, homeY)
 
   def calibrate(self):
     self.update()
@@ -148,9 +180,6 @@ class plotter(QtCore.QObject):
     self.__belts = (left2gondola, right2gondola)
     self.__simBelts = (left2gondola, right2gondola)
 
-    (homeX, homeY) = self._posFromBelts((self.__beltLength, self.__beltLength))
-    homeY = homeY * 0.5
-
-    self.__homePos = (homeX, homeY)
+    self._computeHomePose()
 
     self.changed.emit()
