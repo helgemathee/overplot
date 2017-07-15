@@ -10,11 +10,13 @@ from jogcontrolswidget_impl import JogControlsWidget
 from logwidget_impl import LogWidget
 from previewwidget_impl import PreviewWidget
 from settingswidget_impl import SettingsWidget
+from overplot.models.grbldriver_impl import GrblDriver
 
 class MainWindow(QtGui.QMainWindow):
 
   __settings = None
   __plotter = None
+  __grblDriver = None
 
   def __init__(self):
     super(MainWindow, self).__init__()
@@ -23,6 +25,8 @@ class MainWindow(QtGui.QMainWindow):
 
     self.__settings = QtCore.QSettings(self)
     self.__plotter = plotter(self, self.__settings)
+    self.__grblDriver = GrblDriver(self, self.__plotter, port='COM3')
+    self.__grblDriver.connect()
 
     previewWidget = PreviewWidget(self, self.__plotter)
     self.setCentralWidget(previewWidget)
