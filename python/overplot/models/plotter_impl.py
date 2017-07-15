@@ -25,6 +25,7 @@ class plotter(QtCore.QObject):
   __canvasOffset = None
 
   changed = QtCore.Signal()
+  commandSent = QtCore.Signal(str)
 
   def __init__(self, parent, settings):
     super(plotter, self).__init__(parent)
@@ -109,6 +110,8 @@ class plotter(QtCore.QObject):
       angle = math.acos((b * b + c * c - a * a) / (2.0 * b * c))
     except ValueError:
       pass
+    except ZeroDivisionError:
+      pass
     x = math.cos(angle) * c
     y = math.sin(angle) * c
     return (x, y)
@@ -143,6 +146,9 @@ class plotter(QtCore.QObject):
     if x < 0 or x > self.__stepperDistance:
       return
 
+    # if self.isPenDown():
+    # todo: cut up the commands into very small sections
+
     (l, r) = self._beltsFromPos((x, y))
 
     if l > self.__beltLength:
@@ -152,7 +158,11 @@ class plotter(QtCore.QObject):
 
     self._setBeltLengths((l, r))
 
-    # todo: emit status
+    command = 'G0'
+    if self.isPenDown():
+      command = 'G1'
+
+    self.commandSent.emit('{0} X{1} Y{2}'.format(command, l, r))
 
   def liftPen(self, absAngle):
     if absAngle < 0 or absAngle > 90:
@@ -161,7 +171,14 @@ class plotter(QtCore.QObject):
       return
 
     self.__simServoAngle = absAngle
-    # todo: emit status
+
+    if self.isPenDown():
+      self.commandSent.emit('M5')
+    else:
+      self.commandSent.emit('M3 S{0}'.format(absAngle))
+
+  def isPenDown(self):
+    return self.__simServoAngle == 0
 
   def update(self):
 

@@ -4,25 +4,25 @@
 
 from PySide import QtCore, QtGui
 
+from previewdriver_impl import PreviewDriver
+
 class PreviewWidget(QtGui.QWidget):
 
   __plotter = None
+  __driver = None
 
   def __init__(self, parent, plotter):
     super(PreviewWidget, self).__init__(parent)
 
     self.__plotter = plotter
     self.__plotter.changed.connect(self.onChanged)
+    self.__driver = PreviewDriver(self, self.__plotter)
 
   def resizeEvent(self, event):
     w = event.size().width()
     h = event.size().height()
     self.__pixmap = QtGui.QPixmap(w, h)
-    self.clearPixmap()
-
-  def clearPixmap(self):
-    self.__pixmap.fill(QtGui.QColor(60, 60, 60))
-    # todo: replot!
+    self.__driver.setPixmap(self.__pixmap)
 
   @QtCore.Slot()
   def onChanged(self):
