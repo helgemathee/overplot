@@ -97,6 +97,10 @@ class plotter(QtCore.QObject):
     else:
       self.move(0, mm)
 
+  @QtCore.Slot(float)
+  def onPenRequested(self, degrees):
+    self.liftPen(degrees)
+
   def _posFromBelts(self, belts):
     (c, a) = belts
     b = float(self.__stepperDistance)
@@ -147,6 +151,17 @@ class plotter(QtCore.QObject):
       return
 
     self._setBeltLengths((l, r))
+
+    # todo: emit status
+
+  def liftPen(self, absAngle):
+    if absAngle < 0 or absAngle > 90:
+      return
+    if self.__simServoAngle == absAngle:
+      return
+
+    self.__simServoAngle = absAngle
+    # todo: emit status
 
   def update(self):
 

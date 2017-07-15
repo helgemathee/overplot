@@ -8,6 +8,7 @@ class JogControlsWidget(QtGui.QWidget):
 
   jogRequestedMessage = QtCore.Signal(str)
   moveRequested = QtCore.Signal(str, float)
+  penRequested = QtCore.Signal(float)
 
   def __init__(self, parent):
 
@@ -58,6 +59,13 @@ class JogControlsWidget(QtGui.QWidget):
     bDown10cm.setText("10cm")
     bDown10cm.setMinimumSize(s, s)
 
+    bPenDown = QtGui.QToolButton(self)
+    bPenDown.setText("down")
+    bPenDown.setMinimumSize(s, s)
+    bPenUp = QtGui.QToolButton(self)
+    bPenUp.setText("up")
+    bPenUp.setMinimumSize(s, s)
+
     layout.addWidget(bUp10cm, 0, 3)
     layout.addWidget(bUp10mm, 1, 3)
     layout.addWidget(bUp1mm, 2, 3)
@@ -70,6 +78,8 @@ class JogControlsWidget(QtGui.QWidget):
     layout.addWidget(bDown1mm, 4, 3)
     layout.addWidget(bDown10mm, 5, 3)
     layout.addWidget(bDown10cm, 6, 3)
+    layout.addWidget(bPenDown, 0, 0)
+    layout.addWidget(bPenUp, 1, 0)
 
     bUp10cm.clicked.connect(lambda: self._onButtonPressed('Y', -100))
     bUp10mm.clicked.connect(lambda: self._onButtonPressed('Y', -10))
@@ -84,6 +94,13 @@ class JogControlsWidget(QtGui.QWidget):
     bDown10mm.clicked.connect(lambda: self._onButtonPressed('Y', 10))
     bDown10cm.clicked.connect(lambda: self._onButtonPressed('Y', 100))
 
-  def _onButtonPressed(self, axis, mm):
-    self.jogRequestedMessage.emit("Requested move on axis {0} for {1}".format(axis, mm))
-    self.moveRequested.emit(axis, mm)
+    bPenDown.clicked.connect(lambda: self._onButtonPressed('Z', 0))
+    bPenUp.clicked.connect(lambda: self._onButtonPressed('Z', 90))
+
+  def _onButtonPressed(self, axis, mmOrDeg):
+    if axis in ['X', 'Y']:
+      self.jogRequestedMessage.emit("Requested move on axis {0} for {1}".format(axis, mmOrDeg))
+      self.moveRequested.emit(axis, mmOrDeg)
+    elif axis in ['Z']:
+      self.jogRequestedMessage.emit("Requested pen for {1}".format(axis, mmOrDeg))
+      self.penRequested.emit(mmOrDeg)

@@ -49,6 +49,7 @@ class MainWindow(QtGui.QMainWindow):
     settingsWidget.widget().settingChangedMessage.connect(logWidget.widget().onLogEntryReceived)
     jogWidget.widget().jogRequestedMessage.connect(logWidget.widget().onLogEntryReceived)
     jogWidget.widget().moveRequested.connect(self.__plotter.onMoveRequested)
+    jogWidget.widget().penRequested.connect(self.__plotter.onPenRequested)
 
     self.restoreGeometry(self.__settings.value("mainwindow.geometry"))
     self.restoreState(self.__settings.value("mainwindow.state"))
